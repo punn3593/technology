@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สื่อการเรียนรู้พื้นฐาน Google Sheets - ครูปัณณ์</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables for Themes --- */
+        [data-theme="dark"] {
+            --bg-color: #08120c;
+            --card-bg: #101f16;
+            --card-border: #1b3826;
+            --primary-green: #0f9d58;
+            --green-glow: rgba(15, 157, 88, 0.35);
+            --green-hover: #13b869;
+            --accent-yellow: #f4b400;
+            --text-primary: #e8f5e9;
+            --text-secondary: #81c784;
+            --input-bg: #182e21;
+            --grid-header: #1f3d2b;
+            --cell-active: rgba(15, 157, 88, 0.25);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4fbf7;
+            --card-bg: #ffffff;
+            --card-border: #c8e6c9;
+            --primary-green: #0f9d58;
+            --green-glow: rgba(15, 157, 88, 0.15);
+            --green-hover: #0b8043;
+            --accent-yellow: #f4b400;
+            --text-primary: #1b5e20;
+            --text-secondary: #2e7d32;
+            --input-bg: #e8f5e9;
+            --grid-header: #c8e6c9;
+            --cell-active: rgba(15, 157, 88, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            text-shadow: 0 0 15px var(--green-glow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 10px var(--green-glow);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--primary-green);
+            color: #fff;
+        }
+
+        /* --- Navigation Tabs --- */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-green);
+            color: #ffffff;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 12px var(--green-glow);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- Interactive Sheet Grid --- */
+        .sheet-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .formula-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--input-bg);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 12px;
+            font-family: monospace;
+            font-size: 1.05rem;
+        }
+
+        .formula-bar input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Prompt', sans-serif;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        table.sheet-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        table.sheet-table th, table.sheet-table td {
+            border: 1px solid var(--card-border);
+            padding: 8px;
+            min-width: 80px;
+        }
+
+        table.sheet-table th {
+            background-color: var(--grid-header);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        table.sheet-table td input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: center;
+            color: var(--text-primary);
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        table.sheet-table td.selected {
+            background-color: var(--cell-active);
+            outline: 2px solid var(--primary-green);
+        }
+
+        /* --- Info Card Highlights --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-card {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .info-card i {
+            font-size: 1.8rem;
+            color: var(--primary-green);
+            margin-bottom: 8px;
+        }
+
+        /* --- Quiz Game View --- */
+        .quiz-target {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .btn-action {
+            background: var(--primary-green);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--green-glow);
+            transition: all 0.2s ease;
+            display: block;
+            margin: 1rem auto 0;
+        }
+
+        .btn-action:hover {
+            background: var(--green-hover);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 600px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fa-solid fa-file-excel"></i> Google Sheets Interactive
+            </div>
+            <!-- Dark / Light Theme Button -->
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
+                <i class="fa-solid fa-sun"></i> โหมดสว่าง
+            </button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('basics')"><i class="fa-solid fa-cubes"></i> 1. รู้จักองค์ประกอบ</button>
+            <button class="tab-btn" onclick="switchTab('simulator')"><i class="fa-solid fa-table"></i> 2. ทดลองใช้งานตาราง</button>
+            <button class="tab-btn" onclick="switchTab('formulas')"><i class="fa-solid fa-calculator"></i> 3. สูตรคำนวณเบื้องต้น</button>
+            <button class="tab-btn" onclick="switchTab('quiz')"><i class="fa-solid fa-gamepad"></i> 4. เกมท้าทายทายพิกัด</button>
+        </div>
+
+        <!-- TAB 1: BASICS -->
+        <div id="basics" class="tab-content active">
+            <div class="card">
+                <h3 style="color:var(--primary-green); margin-bottom:10px;"><i class="fa-solid fa-book-open"></i> โครงสร้างพื้นฐานของ Google Sheets</h3>
+                <p style="font-size:0.95rem; color:var(--text-secondary);">Google Sheets คือโปรแกรมตารางคำนวณออนไลน์ ที่ช่วยจัดการข้อมูล ตัวเลข และคำนวณผลลัพธ์ได้อย่างแม่นยำ</p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <i class="fa-solid fa-arrows-left-right"></i>
+                        <h4>คอลัมน์ (Column)</h4>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">แนวตั้ง กำหนดชื่อด้วยตัวอักษรภาษาอังกฤษ เช่น <strong>A, B, C</strong></p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fa-solid fa-arrows-up-down"></i>
+                        <h4>แถว (Row)</h4>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">แนวนอน กำหนดชื่อด้วยตัวเลข เช่น <strong>1, 2, 3</strong></p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fa-solid fa-border-all"></i>
+                        <h4>เซลล์ (Cell)</h4>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">จุดตัดของคอลัมน์และแถว เช่น คอลัมน์ B แถว 3 = <strong>B3</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SIMULATOR -->
+        <div id="simulator" class="tab-content">
+            <div class="card">
+                <h3 style="color:var(--primary-green); margin-bottom:6px;"><i class="fa-solid fa-desktop"></i> ตารางจำลอง (Interactive Sheet)</h3>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">คลิกที่ช่องเพื่อดูพิกัดเซลล์ หรือทดลองแก้ไขตัวเลขในช่องได้เลย</p>
+
+                <!-- Formula Bar -->
+                <div class="formula-bar">
+                    <span id="active-cell-id" style="color:var(--primary-green); font-weight:bold; min-width:40px;">A1</span>
+                    <span style="color:var(--text-secondary);">fx</span>
+                    <input type="text" id="formula-input" placeholder="พิมพ์ข้อมูลหรือสูตร..." readonly>
+                </div>
+
+                <!-- Table Simulation -->
+                <div class="sheet-container">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>1</th>
+                                <td onclick="selectCell(this, 'A1', 'รายการสินค้า')"><input value="รายการสินค้า" oninput="updateVal(this)"></td>
+                                <td onclick="selectCell(this, 'B1', 'จำนวน')"><input value="จำนวน" oninput="updateVal(this)"></td>
+                                <td onclick="selectCell(this, 'C1', 'ราคา (บาท)')"><input value="ราคา (บาท)" oninput="updateVal(this)"></td>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <td onclick="selectCell(this, 'A2', 'สมุดบันทึก')"><input value="สมุดบันทึก" oninput="updateVal(this)"></td>
+                                <td onclick="selectCell(this, 'B2', '5')"><input id="cell-b2" type="number" value="5" oninput="calcSim()"></td>
+                                <td onclick="selectCell(this, 'C2', '20')"><input id="cell-c2" type="number" value="20" oninput="calcSim()"></td>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <td onclick="selectCell(this, 'A3', 'ดินสอ2B')"><input value="ดินสอ2B" oninput="updateVal(this)"></td>
+                                <td onclick="selectCell(this, 'B3', '10')"><input id="cell-b3" type="number" value="10" oninput="calcSim()"></td>
+                                <td onclick="selectCell(this, 'C3', '15')"><input id="cell-c3" type="number" value="15" oninput="calcSim()"></td>
+                            </tr>
+                            <tr style="background:var(--input-bg);">
+                                <th>4</th>
+                                <td><strong>รวมทั้งหมด</strong></td>
+                                <td id="res-sum-qty" style="font-weight:bold; color:var(--primary-green);">15</td>
+                                <td id="res-sum-price" style="font-weight:bold; color:var(--primary-green);">35</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: FORMULAS -->
+        <div id="formulas" class="tab-content">
+            <div class="card">
+                <h3 style="color:var(--primary-green); margin-bottom:10px;"><i class="fa-solid fa-square-root-variable"></i> สูตรการคำนวณเบื้องต้น</h3>
+                <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">การพิมพ์สูตรใน Google Sheets ต้องเริ่มต้นด้วยเครื่องหมายเท่ากับ <strong>=</strong> เสมอ</p>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="info-card" style="text-align:left;">
+                        <strong style="color:var(--primary-green); font-size:1.1rem;">=SUM(ช่วงเซลล์)</strong> - หาผลรวม
+                        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">ตัวอย่าง: <code>=SUM(B2:B3)</code> ผลลัพธ์จะได้ผลรวมของ B2 ถึง B3</div>
+                    </div>
+                    <div class="info-card" style="text-align:left;">
+                        <strong style="color:var(--primary-green); font-size:1.1rem;">=AVERAGE(ช่วงเซลล์)</strong> - หาค่าเฉลี่ย
+                        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">ตัวอย่าง: <code>=AVERAGE(C2:C3)</code> ผลลัพธ์จะได้ค่าเฉลี่ยตัวเลขช่วง C2 ถึง C3</div>
+                    </div>
+                    <div class="info-card" style="text-align:left;">
+                        <strong style="color:var(--primary-green); font-size:1.1rem;">=MAX(ช่วงเซลล์) / =MIN(ช่วงเซลล์)</strong> - หาค่ามากสุด / น้อยสุด
+                        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">ตัวอย่าง: <code>=MAX(C2:C3)</code> คืนค่าตัวเลขที่มากที่สุดในกลุ่ม</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: QUIZ GAME -->
+        <div id="quiz" class="tab-content">
+            <div class="card" style="text-align:center;">
+                <h3 style="color:var(--primary-green);"><i class="fa-solid fa-bullseye"></i> เกมท้าทาย: ทายพิกัดเซลล์</h3>
+                <div style="font-size:0.9rem; color:var(--text-secondary); margin-top:4px;">คะแนนของคุณ: <span id="quiz-score" style="color:var(--accent-yellow); font-weight:bold;">0</span></div>
+
+                <div class="quiz-target" id="quiz-question">จงบอกพิกัดของ "คอลัมน์ B แถว 3"</div>
+
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:1rem; flex-wrap:wrap;">
+                    <button class="tab-btn" onclick="checkAnswer('B3')">B3</button>
+                    <button class="tab-btn" onclick="checkAnswer('3B')">3B</button>
+                    <button class="tab-btn" onclick="checkAnswer('C2')">C2</button>
+                    <button class="tab-btn" onclick="checkAnswer('A3')">A3</button>
+                </div>
+
+                <div id="quiz-feedback" style="margin-top:1.2rem; font-weight:600; min-height:24px;"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; สื่อการเรียนรู้ Google Sheets | ครูปัณณ์ ฟากกว๊าน</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- Dark/Light Theme Switcher ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeBtn = document.getElementById('theme-btn');
+            
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i> โหมดมืด';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i> โหมดสว่าง';
+            }
+        }
+
+        // --- Navigation Tabs Switcher ---
+        function switchTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            contents.forEach(content => content.classList.remove('active'));
+            btns.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- Sheet Simulator Interactions ---
+        function selectCell(element, cellId, val) {
+            const cells = document.querySelectorAll('.sheet-table td');
+            cells.forEach(c => c.classList.remove('selected'));
+
+            element.classList.add('selected');
+            document.getElementById('active-cell-id').innerText = cellId;
+            
+            const inputInside = element.querySelector('input');
+            document.getElementById('formula-input').value = inputInside ? inputInside.value : val;
+        }
+
+        function updateVal(input) {
+            document.getElementById('formula-input').value = input.value;
+        }
+
+        function calcSim() {
+            const b2 = parseFloat(document.getElementById('cell-b2').value) || 0;
+            const b3 = parseFloat(document.getElementById('cell-b3').value) || 0;
+            const c2 = parseFloat(document.getElementById('cell-c2').value) || 0;
+            const c3 = parseFloat(document.getElementById('cell-c3').value) || 0;
+
+            document.getElementById('res-sum-qty').innerText = b2 + b3;
+            document.getElementById('res-sum-price').innerText = c2 + c3;
+        }
+
+        // --- Quiz Game Logic ---
+        let score = 0;
+        const questions = [
+            { q: 'จงบอกพิกัดของ "คอลัมน์ B แถว 3"', ans: 'B3', opts: ['B3', '3B', 'C2', 'A3'] },
+            { q: 'จงบอกพิกัดของ "คอลัมน์ A แถว 1"', ans: 'A1', opts: ['1A', 'A1', 'B1', 'A2'] },
+            { q: 'ถ้าต้องการหาผลรวม B2 ถึง B5 ต้องใช้สูตรใด?', ans: '=SUM(B2:B5)', opts: ['=SUM(B2:B5)', '=TOTAL(B2:B5)', '=AVERAGE(B2:B5)', '=PLUS(B2:B5)'] },
+            { q: 'การพิมพ์สูตรคำนวณ ต้องขึ้นต้นด้วยเครื่องหมายใด?', ans: '=', opts: ['+', '=', '#', 'fx'] }
+        ];
+        let currentQIndex = 0;
+
+        function checkAnswer(userAns) {
+            const feedback = document.getElementById('quiz-feedback');
+            const currentQ = questions[currentQIndex];
+
+            if (userAns === currentQ.ans) {
+                feedback.style.color = '#22c55e';
+                feedback.innerHTML = '<i class="fa-solid fa-circle-check"></i> ถูกต้องแล้วเก่งมาก!';
+                score += 10;
+                document.getElementById('quiz-score').innerText = score;
+            } else {
+                feedback.style.color = '#ef4444';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูก คำตอบที่ถูกต้องคือ ${currentQ.ans}`;
+            }
+
+            setTimeout(() => {
+                currentQIndex = (currentQIndex + 1) % questions.length;
+                loadNextQuestion();
+            }, 1800);
+        }
+
+        function loadNextQuestion() {
+            const q = questions[currentQIndex];
+            document.getElementById('quiz-question').innerText = q.q;
+            document.getElementById('quiz-feedback').innerText = '';
+
+            const btnContainer = document.querySelector('#quiz .card div[style*="display:flex"]');
+            btnContainer.innerHTML = '';
+            
+            q.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt);
+                btnContainer.appendChild(btn);
+            });
+        }
+
+        // Initialize Calculation
+        calcSim();
+    </script>
+</body>
+</html>
