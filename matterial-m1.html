@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการเรียนรู้ประเภทของวัสดุ ม.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f0d;
+    --card: #131c17;
+    --border: #1f382a;
+    --green: #10b981;
+    --green-hover: #059669;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --input-bg: #0f1713;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Prompt', sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .container { width: 100%; max-width: 900px; }
+  
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 24px; color: var(--green); margin-bottom: 6px; }
+  header p { color: var(--muted); font-size: 14px; }
+
+  /* Navigation Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--green);
+    color: #0b0f0d;
+    border-color: var(--green);
+    font-weight: 600;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 18px; color: var(--green); margin-bottom: 12px; }
+  .card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+
+  /* Grid materials */
+  .grid-materials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .mat-card {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .mat-card:hover { border-color: var(--green); transform: translateY(-2px); }
+  .mat-card h3 { color: var(--green); font-size: 16px; margin-bottom: 6px; }
+  .mat-card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* Explorer Detail Box */
+  .detail-box {
+    background: var(--input-bg);
+    border: 1px dashed var(--green);
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 16px;
+    display: none;
+  }
+  .detail-box h3 { color: var(--green); margin-bottom: 8px; font-size: 16px; }
+  .detail-box p { color: var(--text); font-size: 14px; margin: 0; }
+
+  /* Quiz Section */
+  .quiz-q { margin-bottom: 20px; }
+  .quiz-q p { font-weight: 500; color: var(--text); margin-bottom: 8px; font-size: 15px; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-label {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+  }
+  .opt-label:hover { border-color: var(--green); }
+  .submit-btn {
+    background: var(--green);
+    color: #0b0f0d;
+    border: none;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .submit-btn:hover { background: var(--green-hover); }
+  #scoreBox { text-align: center; font-size: 18px; font-weight: 600; color: var(--green); margin-top: 15px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>ประเภทของวัสดุ (Types of Materials)</h1>
+    <p>สื่อการเรียนรู้ออนไลน์ วิชาการออกแบบและเทคโนโลยี ชั้นมัธยมศึกษาปีที่ 1</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(0)">📖 เนื้อหาบทเรียน</button>
+    <button class="tab-btn" onclick="switchTab(1)">🔍 สำรวจประเภทวัสดุ</button>
+    <button class="tab-btn" onclick="switchTab(2)">📝 แบบทดสอบประเมินตนเอง</button>
+  </div>
+
+  <!-- PANEL 0: LESSON CONTENT -->
+  <div class="panel active" id="panel-0">
+    <div class="card">
+      <h2>วัสดุคืออะไร?</h2>
+      <p><b>วัสดุ</b> คือ สิ่งที่นำมาใช้ทำสิ่งของเครื่องใช้ ตลอดจนเครื่องมือและอุปกรณ์ต่างๆ โดยวัสดุแต่ละชนิดมีสมบัติทางกายภาพและทางเคมีที่แตกต่างกัน ทำให้มีความเหมาะสมในการนำไปใช้งานที่ต่างกันออกไป สามารถแบ่งออกเป็นกลุ่มใหญ่ๆ ได้ดังนี้</p>
+    </div>
+    <div class="card">
+      <h2>การจำแนกประเภทวัสดุหลัก</h2>
+      <div class="grid-materials">
+        <div class="mat-card">
+          <h3>1. โลหะ (Metals)</h3>
+          <p>วัสดุที่ได้จากการถลุงแร่ แบ่งเป็นโลหะกลุ่มเหล็กและอโลหะ นำไฟฟ้าและความร้อนได้ดี แข็งแรงทนทาน</p>
+        </div>
+        <div class="mat-card">
+          <h3>2. ไม้ (Woods)</h3>
+          <p>ได้จากธรรมชาติหรือไม้ดัดแปลง มีลวดลายสวยงาม น้ำหนักเบา นิยมทำเฟอร์นิเจอร์และสิ่งก่อสร้าง</p>
+        </div>
+        <div class="mat-card">
+          <h3>3. พลาสติก (Plastics)</h3>
+          <p>เป็นวัสดุสังเคราะห์จากปิโตรเลียม ขึ้นรูปง่าย น้ำหนักเบา เป็นฉนวนไฟฟ้า</p>
+        </div>
+        <div class="mat-card">
+          <h3>4. เซรามิก (Ceramics)</h3>
+          <p>ทำจากดินเผา หิน หรือแร่ธาตุผ่านความร้อนสูง แข็ง ทนความร้อนสูง แต่เปราะแตกหักง่าย</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 1: INTERACTIVE EXPLORER -->
+  <div class="panel" id="panel-1">
+    <div class="card">
+      <h2>คลิกเพื่อศึกษาเจาะลึกสมบัติและตัวอย่างการใช้งาน</h2>
+      <p>เลือกประเภทวัสดุด้านล่างเพื่อดูรายละเอียด</p>
+      
+      <div class="grid-materials">
+        <div class="mat-card" onclick="showDetail('metal')">
+          <h3>🔩 โลหะ (Metals)</h3>
+          <p>คลิกเพื่อดูรายละเอียด</p>
+        </div>
+        <div class="mat-card" onclick="showDetail('wood')">
+          ### 🪵 ไม้ (Woods)
+          <p>คลิกเพื่อดูรายละเอียด</p>
+        </div>
+        <div class="mat-card" onclick="showDetail('plastic')">
+          <h3>🧪 พลาสติก (Plastics)</h3>
+          <p>คลิกเพื่อดูรายละเอียด</p>
+        </div>
+        <div class="mat-card" onclick="showDetail('ceramic')">
+          <h3>🏺 เซรามิก (Ceramics)</h3>
+          <p>คลิกเพื่อดูรายละเอียด</p>
+        </div>
+      </div>
+
+      <div class="detail-box" id="detailDisplay">
+        <h3>กรุณาเลือกประเภทวัสดุด้านบน</h3>
+        <p>รายละเอียดสมบัติและตัวอย่างการใช้งานจะปรากฏที่นี่</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: QUIZ -->
+  <div class="panel" id="panel-2">
+    <div class="card">
+      <h2>แบบทดสอบประเมินตนเอง (5 ข้อ)</h2>
+      <form id="quizForm" onsubmit="gradeQuiz(event)">
+        
+        <div class="quiz-q">
+          <p>1. วัสดุในข้อใดจัดเป็น "โลหะอโลหะ" หรือโลหะที่ไม่ใช่เหล็ก?</p>
+          <div class="options">
+            <label class="opt-label"><input type="radio" name="q1" value="a"> ก. เหล็กเส้นก่อสร้าง</label>
+            <label class="opt-label"><input type="radio" name="q1" value="b"> ข. อลูมิเนียมและทองแดง</label>
+            <label class="opt-label"><input type="radio" name="q1" value="c"> ค. เหล็กกล้าไร้สนิม (Stainless)</label>
+          </div>
+        </div>
+
+        <div class="quiz-q">
+          <p>2. ข้อใดคือสมบัติเด่นของพลาสติกประเภท "เทอร์โมพลาสติก"?</p>
+          <div class="options">
+            <label class="opt-label"><input type="radio" name="q2" value="a"> ก. หลอมเหลวเมื่อได้รับความร้อน และขึ้นรูปใหม่ได้</label>
+            <label class="opt-label"><input type="radio" name="q2" value="b"> ข. ไหม้เกรียมและสลายตัวทันทีเมื่อโดนความร้อนสูง</label>
+            <label class="opt-label"><input type="radio" name="q2" value="c"> ค. ไม่สามารถนำมาหลอมซ้ำได้เลย</label>
+          </div>
+        </div>
+
+        <div class="quiz-q">
+          <p>3. หากนักเรียนต้องการสร้างภาชนะทนความร้อนสูงและไม่นำไฟฟ้า ควรเลือกใช้วัสดุใด?</p>
+          <div class="options">
+            <label class="opt-label"><input type="radio" name="q3" value="a"> ก. ทองเหลือง</label>
+            <label class="opt-label"><input type="radio" name="q3" value="b"> ข. เซรามิก</label>
+            <label class="opt-label"><input type="radio" name="q3" value="c"> ค. ไม้อัด</label>
+          </div>
+        </div>
+
+        <div class="quiz-q">
+          <p>4. ไม้อัด (Plywood) จัดอยู่ในวัสดุประเภทไม้แบบใด?</p>
+          <div class="options">
+            <label class="opt-label"><input type="radio" name="q4" value="a"> ก. ไม้ธรรมชาติ (Solid Wood)</label>
+            <label class="opt-label"><input type="radio" name="q4" value="b"> ข. ไม้ดัดแปลงหรือไม้สังเคราะห์</label>
+            <label class="opt-label"><input type="radio" name="q4" value="c"> ค. ไม้เทียมพลาสติก</label>
+          </div>
+        </div>
+
+        <div class="quiz-q">
+          <p>5. ข้อใดกล่าวถึงสมบัติของเซรามิกได้ถูกต้องที่สุด?</p>
+          <div class="options">
+            <label class="opt-label"><input type="radio" name="q5" value="a"> ก. ยืดหยุ่นสูงและนำไฟฟ้าได้ดี</label>
+            <label class="opt-label"><input type="radio" name="q5" value="b"> ข. แข็ง ทนความร้อนสูง แต่เปราะ</label>
+            <label class="opt-label"><input type="radio" name="q5" value="c"> ค. น้ำหนักเบาและหลอมเหลวที่อุณหภูมิต่ำ</label>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">ส่งคำตอบและตรวจคะแนน</button>
+        <div id="scoreBox"></div>
+      </form>
+    </div>
+  </div>
+
+  <footer>สื่อการเรียนรู้ออนไลน์ ม.1 · ประเภทของวัสดุ</footer>
+</div>
+
+<script>
+  function switchTab(idx) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.panel').forEach((p, i) => {
+      p.classList.toggle('active', i === idx);
+    });
+  }
+
+  const details = {
+    metal: {
+      title: "🔩 โลหะ (Metals)",
+      desc: "<b>สมบัติ:</b> นำความร้อนและไฟฟ้าได้ดี มีความแข็งแรงทนทาน ทนต่อแรงดึงสูง ผิวเป็นมันวาว<br><b>แบ่งเป็น:</b> โลหะกลุ่มเหล็ก (เช่น เหล็กกล้า เหล็กหล่อ) และโลหะนอกกลุ่มเหล็ก (เช่น อลูมิเนียม ทองแดง ทองเหลือง)<br><b>ตัวอย่างการใช้งาน:</b> โครงสร้างอาคาร, สายไฟ, เครื่องมือช่าง, กระทะ"
+    },
+    wood: {
+      title: "🪵 ไม้ (Woods)",
+      desc: "<b>สมบัติ:</b> เป็นฉนวนกันความร้อนและไฟฟ้าตามธรรมชาติ มีลวดลายสวยงาม แข็งแรงปานกลาง<br><b>แบ่งเป็น:</b> ไม้ธรรมชาติ (ไม้เนื้อแข็ง ไม้เนื้ออ่อน) และไม้ดัดแปลง (ไม้อัด ไม้ปาร์ติเกิล)<br><b>ตัวอย่างการใช้งาน:</b> เฟอร์นิเจอร์, ตู้, โต๊ะ, งานตกแต่งบ้าน"
+    },
+    plastic: {
+      title: "🧪 พลาสติก (Plastics)",
+      desc: "<b>สมบัติ:</b> น้ำหนักเบา ไม่นำไฟฟ้า ทนต่อการกัดกร่อน ขึ้นรูปง่าย<br><b>แบ่งเป็น:</b> เทอร์โมพลาสติก (หลอมซ้ำได้ เช่น PET, PVC) และเทอร์โมเซตติ้ง (หลอมซ้ำไม่ได้ เช่น เมลามีน)<br><b>ตัวอย่างการใช้งาน:</b> ขวดน้ำ, ท่อประปา, ภาชนะบรรจุอาหาร"
+    },
+    ceramic: {
+      title: "🏺 เซรามิก (Ceramics)",
+      desc: "<b>สมบัติ:</b> ทนความร้อนสูง ทนต่อการกัดกร่อน แข็งมากแต่เปราะแตกหักง่าย<br><b>ส่วนประกอบ:</b> ผลิตจากดิน หิน ทราย และแร่ธาตุต่างๆ ผ่านการเผาที่อุณหภูมิสูง<br><b>ตัวอย่างการใช้งาน:</b> ถ้วยจานกระเบื้อง, อิฐมอญ, สุขภัณฑ์, กระจก"
+    }
+  };
+
+  function showDetail(key) {
+    const box = document.getElementById('detailDisplay');
+    box.style.display = 'block';
+    box.innerHTML = `<h3>${details[key].title}</h3><p>${details[key].desc}</p>`;
+  }
+
+  function gradeQuiz(e) {
+    e.preventDefault();
+    const answers = { q1: 'b', q2: 'a', q3: 'b', q4: 'b', q5: 'b' };
+    let score = 0;
+    let total = 5;
+
+    for (let q in answers) {
+      const selected = document.querySelector(`input[name="${q}"]:checked`);
+      if (selected && selected.value === answers[q]) {
+        score++;
+      }
+    }
+
+    const box = document.getElementById('scoreBox');
+    box.textContent = `คุณทำคะแนนได้ ${score} จาก ${total} คะแนน (${(score/total)*100}%)`;
+  }
+</script>
+</body>
+</html>
