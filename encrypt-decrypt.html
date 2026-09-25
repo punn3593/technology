@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AES-256-GCM Visualizer & Learning Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050806;
+    --card: #0c1410;
+    --border: #163322;
+    --border-focus: #00ff88;
+    --green: #00ff88;
+    --green-dim: #008844;
+    --text: #e2e8f0;
+    --muted: #8a9991;
+    --input-bg: #080d0a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Prompt', sans-serif;
+    min-height: 100vh;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 820px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    font-family: 'Fira Code', monospace;
+  }
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .card h2 {
+    font-size: 18px;
+    color: var(--green);
+    margin-bottom: 16px;
+    font-family: 'Fira Code', monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media(max-width: 600px){ .grid-2 { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Prompt', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+  }
+  input:focus, textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.15);
+  }
+  textarea { resize: vertical; height: 90px; }
+
+  button {
+    background: var(--green);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: #050806;
+    font-family: 'Prompt', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 16px;
+    transition: 0.2s;
+  }
+  button:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .output-box {
+    background: var(--input-bg);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+    word-break: break-all;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--green);
+    min-height: 48px;
+  }
+
+  .step-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step-list li {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .step-list li b {
+    color: var(--green);
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+  }
+  .step-list li span {
+    color: var(--muted);
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 20px;
+    font-family: 'Fira Code', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>[ AES-256-GCM Learning Lab ]</h1>
+    <p>สื่อการเรียนรู้กระบวนการเข้ารหัสและถอดรหัสข้อมูลแบบสมมาตร</p>
+  </header>
+
+  <!-- ส่วนเข้ารหัส -->
+  <div class="card">
+    <h2>> 1. จำลองการเข้ารหัส (Encrypt)</h2>
+    <div class="grid-2" style="margin-bottom: 14px;">
+      <div>
+        <label>ข้อความดิบ (Plaintext)</label>
+        <textarea id="plain" placeholder="พิมพ์ข้อความ...">ความลับสุดยอด 30032525</textarea>
+      </div>
+      <div>
+        <label>รหัสผ่าน (Secret Key)</label>
+        <input id="secret" type="text" value="MySecurePassword2026!" style="margin-bottom: 12px;">
+        <button onclick="runEncrypt()">เข้ารหัสข้อมูล</button>
+      </div>
+    </div>
+    <div>
+      <label>ผลลัพธ์ข้อความลับ (Ciphertext)</label>
+      <div id="cipherOutput" class="output-box">กดปุ่มเข้ารหัสเพื่อดูผลลัพธ์...</div>
+    </div>
+  </div>
+
+  <!-- ส่วนถอดรหัส -->
+  <div class="card">
+    <h2>> 2. จำลองการถอดรหัส (Decrypt)</h2>
+    <div class="grid-2" style="margin-bottom: 14px;">
+      <div>
+        <label>วางข้อความลับ (Ciphertext)</label>
+        <textarea id="cipherInput" placeholder="นำรหัสจากด้านบนมาวางที่นี่..."></textarea>
+      </div>
+      <div>
+        <label>รหัสผ่านถอดรหัส (Secret Key)</label>
+        <input id="secretDec" type="text" value="MySecurePassword2026!" style="margin-bottom: 12px;">
+        <button onclick="runDecrypt()">ถอดรหัสข้อมูล</button>
+      </div>
+    </div>
+    <div>
+      <label>ข้อความดั้งเดิมที่กู้คืนได้ (Plaintext)</label>
+      <div id="plainOutput" class="output-box">ผลลัพธ์การถอดรหัสจะแสดงที่นี่...</div>
+    </div>
+  </div>
+
+  <!-- ส่วนอธิบาย -->
+  <div class="card">
+    <h2>> โครงสร้างเบื้องหลัง AES-256-GCM</h2>
+    <ul class="step-list">
+      <li>
+        <b>Salt (16 Bytes)</b>
+        <span>สุ่มเกลือเพื่อป้องกันการโจมตีด้วย Rainbow Table</span>
+      </li>
+      <li>
+        <b>IV - Initialization Vector (12 Bytes)</b>
+        <span>เวกเตอร์เริ่มต้นรับประกันว่าข้อมูลเดิมเข้ารหัสซ้ำจะได้ผลลัพธ์ไม่ซ้ำกัน</span>
+      </li>
+    </ul>
+  </div>
+
+  <footer>AES-256-GCM Educational Demo</footer>
+</div>
+
+<script>
+  const enc = new TextEncoder();
+  const dec = new TextDecoder();
+  const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+
+  async function deriveKey(pass, salt) {
+    const baseKey = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+      baseKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  async function runEncrypt() {
+    try {
+      const plainText = document.getElementById('plain').value;
+      const secret = document.getElementById('secret').value;
+      if(!plainText || !secret) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
+
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(secret, salt);
+      const cipherBytes = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plainText));
+
+      const combined = new Uint8Array(salt.length + iv.length + cipherBytes.byteLength);
+      combined.set(salt, 0);
+      combined.set(iv, salt.length);
+      combined.set(new Uint8Array(cipherBytes), salt.length + iv.length);
+
+      const res = b64(combined);
+      document.getElementById('cipherOutput').textContent = res;
+      document.getElementById('cipherInput').value = res;
+    } catch(err) {
+      document.getElementById('cipherOutput').textContent = 'เกิดข้อผิดพลาด: ' + err.message;
+    }
+  }
+
+  async function runDecrypt() {
+    try {
+      const cipherInput = document.getElementById('cipherInput').value.trim();
+      const secret = document.getElementById('secretDec').value;
+      if(!cipherInput || !secret) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
+
+      const rawData = Uint8Array.from(atob(cipherInput), c => c.charCodeAt(0));
+      const salt = rawData.slice(0, 16);
+      const iv = rawData.slice(16, 28);
+      const cipherBytes = rawData.slice(28);
+
+      const key = await deriveKey(secret, salt);
+      const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherBytes);
+
+      document.getElementById('plainOutput').textContent = dec.decode(decrypted);
+    } catch(err) {
+      document.getElementById('plainOutput').textContent = 'ถอดรหัสไม่สำเร็จ (รหัสผ่านผิดหรือข้อมูลไม่ถูกต้อง)';
+    }
+  }
+</script>
+</body>
+</html>
