@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สื่ออินเตอร์แรคทีฟ กฎของโอมห์ (Ohm's Law Interactive Simulator)</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #080b10;
+            --card-bg: #101520;
+            --card-border: #1a2332;
+            --neon-blue: #00d2ff;
+            --blue-glow: rgba(0, 210, 255, 0.3);
+            --blue-hover: #00b4dc;
+            --accent-yellow: #ffcc00;
+            --text-primary: #ffffff;
+            --text-secondary: #829ab1;
+            --input-bg: #0b0e14;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px var(--blue-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Visual Simulation Box --- */
+        .simulation-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #121d2d 0%, #080b10 100%);
+            border: 1px solid var(--neon-blue);
+            box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.1);
+            position: relative;
+        }
+
+        .circuit-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Bulb Ratings Badge --- */
+        .bulb-spec-badge {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px dashed var(--neon-blue);
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .bulb-spec-badge strong {
+            color: var(--accent-yellow);
+        }
+
+        .bulb-container {
+            position: relative;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulb-icon {
+            font-size: 5rem;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .electron-flow-container {
+            width: 100%;
+            height: 20px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .electron-dots {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-blue);
+            animation: moveElectrons 2s linear infinite;
+        }
+
+        @keyframes moveElectrons {
+            0% { transform: translateX(-20px); }
+            100% { transform: translateX(20px); }
+        }
+
+        .sim-status {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- Slider Controls --- */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .slider-label span.val {
+            color: var(--neon-blue);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: var(--input-bg);
+            outline: none;
+            border: 1px solid var(--card-border);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--neon-blue);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* --- Formula Visualizer (V = I * R) --- */
+        .formula-interactive {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--input-bg);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+
+        .var-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .var-symbol {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+        }
+
+        .var-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .math-op {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* --- Stats Output Grid --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .stat-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-value span {
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            font-weight: 400;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--neon-blue);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fa-solid fa-atom"></i> Ohm's Law Interactive
+            </div>
+            <div class="header-subtitle">จำลองแบบโต้ตอบ: ปรับค่า สังเกตการเปลี่ยนแปลงกระแสและความสว่างของหลอดไฟ</div>
+        </header>
+
+        <div class="grid-layout">
+            <!-- Left: Interactive Controls -->
+            <div class="card control-group">
+                <h3 style="font-size: 1.1rem; color: var(--neon-blue);"><i class="fa-solid fa-sliders"></i> ปรับแต่งค่าวงจร</h3>
+                
+                <!-- Voltage Slider -->
+                <div class="slider-box">
+                    <div class="slider-label">
+                        <span><i class="fa-solid fa-car-battery" style="color:var(--neon-blue)"></i> แรงดันไฟฟ้า (E / V)</span>
+                        <span class="val" id="v-val">12 V</span>
+                    </div>
+                    <input type="range" id="voltage" min="0" max="50" value="12" step="1" oninput="updateCircuit()">
+                </div>
+
+                <!-- Resistance Slider -->
+                <div class="slider-box">
+                    <div class="slider-label">
+                        <span><i class="fa-solid fa-microchip" style="color:var(--neon-blue)"></i> ความต้านทาน (R)</span>
+                        <span class="val" id="r-val">10 Ω</span>
+                    </div>
+                    <input type="range" id="resistance" min="1" max="100" value="10" step="1" oninput="updateCircuit()">
+                </div>
+
+                <!-- Interactive Formula -->
+                <div class="formula-interactive">
+                    <div class="var-box" id="box-v">
+                        <div class="var-symbol" id="f-v">12</div>
+                        <div class="var-name">E (โวลต์)</div>
+                    </div>
+                    <div class="math-op">=</div>
+                    <div class="var-box" id="box-i">
+                        <div class="var-symbol" id="f-i">1.2</div>
+                        <div class="var-name">I (แอมแปร์)</div>
+                    </div>
+                    <div class="math-op">×</div>
+                    <div class="var-box" id="box-r">
+                        <div class="var-symbol" id="f-r">10</div>
+                        <div class="var-name">R (โอห์ม)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Visual Simulation -->
+            <div class="card simulation-box">
+                <div class="circuit-title">
+                    <i class="fa-solid fa-lightbulb"></i> แบบจำลองวงจรไฟฟ้าจำลอง
+                </div>
+
+                <!-- Rated Specs Badge -->
+                <div class="bulb-spec-badge">
+                    ⚡ พิกัดหลอดไฟปกติ: <strong>12 V</strong> | <strong>1.2 A</strong> | <strong>14.4 W</strong>
+                </div>
+
+                <!-- Light Bulb -->
+                <div class="bulb-container">
+                    <i class="fa-solid fa-lightbulb bulb-icon" id="bulb"></i>
+                </div>
+
+                <!-- Electron Flow Indicator -->
+                <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">อัตราการไหลของอิเล็กตรอน (กระแสไฟฟ้า I)</div>
+                <div class="electron-flow-container">
+                    <div class="electron-dots" id="dots-box">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+
+                <div class="sim-status" id="sim-status-text">
+                    หลอดไฟสว่างปกติ
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Readouts Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">แรงดันไฟฟ้า (E)</div>
+                <div class="stat-value" id="out-v">12 <span>V</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">ความต้านทาน (R)</div>
+                <div class="stat-value" id="out-r">10 <span>Ω</span></div>
+            </div>
+            <div class="stat-card" style="border-color: var(--neon-blue);">
+                <div class="stat-title">กระแสไฟฟ้า (I)</div>
+                <div class="stat-value" id="out-i">1.2 <span>A</span></div>
+            </div>
+            <div class="stat-card" style="border-color: var(--accent-yellow);">
+                <div class="stat-title">กำลังไฟฟ้า (P)</div>
+                <div class="stat-value" id="out-p">14.4 <span>W</span></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; สื่ออินเตอร์แรคทีฟวิทยาศาสตร์และอิเล็กทรอนิกส์ ครูปัณณ์ ฟากกว๊าน | <a href="index.html">กลับหน้าหลัก</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function updateCircuit() {
+            // Get slider values
+            let e = parseFloat(document.getElementById('voltage').value);
+            let r = parseFloat(document.getElementById('resistance').value);
+
+            // Calculate Current (I = E / R) & Power (P = E * I)
+            let i = e / r;
+            let p = e * i;
+
+            // Update Label Displays
+            document.getElementById('v-val').innerText = `${e} V`;
+            document.getElementById('r-val').innerText = `${r} Ω`;
+
+            // Update Output Stats
+            document.getElementById('out-v').innerHTML = `${e} <span>V</span>`;
+            document.getElementById('out-r').innerHTML = `${r} <span>Ω</span>`;
+            document.getElementById('out-i').innerHTML = `${i.toFixed(2)} <span>A</span>`;
+            document.getElementById('out-p').innerHTML = `${p.toFixed(1)} <span>W</span>`;
+
+            // Update Interactive Formula text
+            document.getElementById('f-v').innerText = e;
+            document.getElementById('f-i').innerText = i.toFixed(2);
+            document.getElementById('f-r').innerText = r;
+
+            // Visual Simulation Updates
+            const bulb = document.getElementById('bulb');
+            const statusText = document.getElementById('sim-status-text');
+
+            if (e === 0) {
+                // Off State
+                bulb.style.color = '#334155';
+                bulb.style.filter = 'none';
+                statusText.innerText = 'วงจรปิดอยู่ / ไม่มีแรงดันไฟฟ้า';
+            } else {
+                // Brightness calculated based on Power relative to rated power (14.4W)
+                let ratedPower = 14.4;
+                let brightness = Math.min(p / ratedPower, 1.5); 
+                let yellowGlow = Math.min((p / ratedPower) * 25, 60); // Glow radius in px
+                
+                bulb.style.color = `rgba(255, 204, 0, ${Math.max(brightness, 0.2)})`;
+                bulb.style.filter = `drop-shadow(0 0 ${yellowGlow}px rgba(255, 204, 0, ${brightness}))`;
+
+                // Overload condition (> 150% of rated specs)
+                if (e > 18 || i > 1.8 || p > 21.6) {
+                    statusText.innerHTML = '<span style="color:#ff4d4d; font-weight:600;"><i class="fa-solid fa-triangle-exclamation"></i> เตือน: เกินพิกัดหลอดไฟ! (แรงดัน/กระแสสูงเกินไป หลอดไฟอาจขาด)</span>';
+                } else if (p > 16) {
+                    statusText.innerText = 'หลอดไฟสว่างมาก (ทำงานเกินพิกัดเล็กน้อย)';
+                } else if (p >= 10 && p <= 16) {
+                    statusText.innerText = 'หลอดไฟสว่างปกติ (อยู่ในช่วงพิกัด)';
+                } else {
+                    statusText.innerText = 'หลอดไฟสว่างริบหรี่ (แรงดัน/กระแสต่ำกว่าพิกัด)';
+                }
+            }
+
+            // Electron Speed Simulation
+            const dots = document.querySelectorAll('.dot');
+            let animDuration = i > 0 ? Math.max(2.5 / i, 0.2) : 0; // Faster current = faster animation
+
+            dots.forEach(dot => {
+                if (e === 0) {
+                    dot.style.animationPlayState = 'paused';
+                    dot.style.opacity = '0.2';
+                } else {
+                    dot.style.animationPlayState = 'running';
+                    dot.style.animationDuration = `${animDuration}s`;
+                    dot.style.opacity = '1';
+                }
+            });
+        }
+
+        // Initialize on page load
+        updateCircuit();
+    </script>
+</body>
+</html>

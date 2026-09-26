@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สื่อการเรียนรู้อ่านรหัสสีตัวต้านทาน - ครูปัณณ์</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* ธีม ดำ - ชมพู Neon Pink */
+            --bg-color: #0d0a0c;
+            --card-bg: #181216;
+            --card-border: #2e1c26;
+            --primary-pink: #ff2a85;
+            --pink-glow: rgba(255, 42, 133, 0.4);
+            --pink-hover: #ff549d;
+            --accent-pink-light: #ffb3d9;
+            --text-primary: #ffffff;
+            --text-secondary: #a8929e;
+            --input-bg: #21161d;
+            --resistor-body: #d4a373;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-pink);
+            text-shadow: 0 0 15px var(--pink-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .mode-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-mode {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mode.active, .btn-mode:hover {
+            background: var(--primary-pink);
+            color: #fff;
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 12px var(--pink-glow);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Resistor Graphic Container --- */
+        .resistor-display {
+            background: radial-gradient(circle, #24141e 0%, #0d0a0c 100%);
+            border: 1px solid var(--primary-pink);
+            box-shadow: inset 0 0 15px rgba(255, 42, 133, 0.2), 0 0 15px rgba(255, 42, 133, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .wire {
+            width: 100%;
+            height: 8px;
+            background: #71717a;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .resistor-body {
+            width: 280px;
+            height: 90px;
+            background: var(--resistor-body);
+            border-radius: 20px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 35px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 5px 10px rgba(255,255,255,0.3), inset 0 -5px 10px rgba(0,0,0,0.3);
+        }
+
+        .band {
+            width: 18px;
+            height: 100%;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 4px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .band::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.25) 100%);
+        }
+
+        /* --- Result Display Card --- */
+        .result-box {
+            background: var(--input-bg);
+            border: 1px solid var(--primary-pink);
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 42, 133, 0.15);
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-pink);
+            text-shadow: 0 0 12px var(--pink-glow);
+        }
+
+        .result-range {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* --- Band Selector Controls --- */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .band-control {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1rem;
+        }
+
+        .control-title {
+            font-size: 0.85rem;
+            color: var(--primary-pink);
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .color-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .color-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .color-list::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 4px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+
+        .color-option:hover {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+        }
+
+        .color-option.selected {
+            border-color: var(--primary-pink);
+            background: rgba(255, 42, 133, 0.18);
+            font-weight: 600;
+        }
+
+        .color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+
+        /* --- Quiz Section --- */
+        .quiz-container {
+            display: none;
+            text-align: center;
+        }
+
+        .quiz-score {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+        }
+
+        .quiz-inputs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+
+        .custom-input, .custom-select {
+            background: var(--input-bg);
+            border: 1px solid var(--primary-pink);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .custom-input {
+            width: 130px;
+        }
+
+        .custom-input:focus, .custom-select:focus {
+            box-shadow: 0 0 10px var(--pink-glow);
+        }
+
+        .btn-action {
+            background: var(--primary-pink);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--pink-glow);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: var(--pink-hover);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .selector-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-title {
+                font-size: 1.6rem;
+            }
+            .resistor-body {
+                width: 220px;
+                height: 75px;
+                padding: 0 25px;
+            }
+            .band {
+                width: 14px;
+            }
+            .quiz-inputs {
+                flex-direction: column;
+            }
+            .custom-input, .custom-select {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fa-solid fa-microchip"></i> Resistor Color Code
+            </div>
+            <div class="header-subtitle">สื่อเรียนรู้การอ่านรหัสสีตัวต้านทานแบบ 4 แถบสี</div>
+        </header>
+
+        <!-- Mode Switcher -->
+        <div class="mode-switch">
+            <button class="btn-mode active" onclick="switchMode('calc')"><i class="fa-solid fa-calculator"></i> โหมดคำนวณค่า</button>
+            <button class="btn-mode" onclick="switchMode('quiz')"><i class="fa-solid fa-gamepad"></i> โหมดเกมท้าทาย</button>
+        </div>
+
+        <!-- Resistor Graphic Visualizer -->
+        <div class="card resistor-display">
+            <div class="wire"></div>
+            <div class="resistor-body">
+                <div class="band" id="band1-graphic" style="background-color: #964B00;"></div>
+                <div class="band" id="band2-graphic" style="background-color: #000000;"></div>
+                <div class="band" id="band3-graphic" style="background-color: #FF0000;"></div>
+                <div class="band" id="band4-graphic" style="background-color: #D4AF37;"></div>
+            </div>
+        </div>
+
+        <!-- CALC MODE DISPLAY -->
+        <div id="calc-view">
+            <div class="card result-box">
+                <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">ค่าความต้านทานที่อ่านได้</div>
+                <div class="result-value" id="res-val">1.0 kΩ</div>
+                <div class="result-range" id="res-range">ช่วงค่าจริง: 950 Ω - 1.05 kΩ (คลาดเคลื่อน ±5%)</div>
+            </div>
+
+            <!-- Color Selection Panels -->
+            <div class="card selector-grid">
+                <!-- Band 1 -->
+                <div class="band-control">
+                    <div class="control-title">แถบที่ 1 (หลักที่ 1)</div>
+                    <div class="color-list" id="band1-opts"></div>
+                </div>
+                <!-- Band 2 -->
+                <div class="band-control">
+                    <div class="control-title">แถบที่ 2 (หลักที่ 2)</div>
+                    <div class="color-list" id="band2-opts"></div>
+                </div>
+                <!-- Band 3 -->
+                <div class="band-control">
+                    <div class="control-title">แถบที่ 3 (ตัวคูณ)</div>
+                    <div class="color-list" id="band3-opts"></div>
+                </div>
+                <!-- Band 4 -->
+                <div class="band-control">
+                    <div class="control-title">แถบที่ 4 (ความคลาดเคลื่อน)</div>
+                    <div class="color-list" id="band4-opts"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ MODE DISPLAY -->
+        <div id="quiz-view" class="card quiz-container">
+            <div class="quiz-score">คะแนนของคุณ: <span id="quiz-score-val" style="color:var(--primary-pink); font-weight:700;">0</span></div>
+            <div style="font-size:0.95rem; color:var(--text-secondary);">โปรดอ่านแถบสีบนตัวต้านทานด้านบน แล้วป้อนค่าให้ถูกต้อง:</div>
+            
+            <div class="quiz-inputs">
+                <input type="number" id="quiz-val-input" class="custom-input" placeholder="ระบุตัวเลข" step="any" required>
+                <select id="quiz-unit-select" class="custom-select">
+                    <option value="1">Ω</option>
+                    <option value="1000">kΩ</option>
+                    <option value="1000000">MΩ</option>
+                </select>
+                <span style="font-size:1.2rem; font-weight:700; color:var(--primary-pink);">±</span>
+                <select id="quiz-tol-select" class="custom-select">
+                    <option value="1">1%</option>
+                    <option value="2">2%</option>
+                    <option value="0.5">0.5%</option>
+                    <option value="0.25">0.25%</option>
+                    <option value="0.1">0.1%</option>
+                    <option value="0.05">0.05%</option>
+                    <option value="5" selected>5%</option>
+                    <option value="10">10%</option>
+                </select>
+            </div>
+
+            <button class="btn-action" onclick="checkQuizAnswer()"><i class="fa-solid fa-check-circle"></i> ตรวจคำตอบ</button>
+            <div id="quiz-feedback" style="margin-top:1.2rem; font-weight:600; font-size:1.1rem;"></div>
+        </div>
+
+        <footer>
+            <p>© สื่อการเรียนรู้อิเล็กทรอนิกส์ ครูปัณณ์ | <a href="index.html" style="color:var(--primary-pink); text-decoration:none;">กลับหน้าหลัก</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Color Data Dictionary
+        const colorData = [
+            { name: "ดำ", hex: "#000000", val: 0, mult: 1, tol: null },
+            { name: "น้ำตาล", hex: "#964B00", val: 1, mult: 10, tol: 1 },
+            { name: "แดง", hex: "#FF0000", val: 2, mult: 100, tol: 2 },
+            { name: "ส้ม", hex: "#FF6600", val: 3, mult: 1000, tol: null },
+            { name: "เหลือง", hex: "#FFFF00", val: 4, mult: 10000, tol: null },
+            { name: "เขียว", hex: "#009900", val: 5, mult: 100000, tol: 0.5 },
+            { name: "น้ำเงิน", hex: "#0000FF", val: 6, mult: 1000000, tol: 0.25 },
+            { name: "ม่วง", hex: "#990099", val: 7, mult: 10000000, tol: 0.1 },
+            { name: "เทา", hex: "#808080", val: 8, mult: 100000000, tol: 0.05 },
+            { name: "ขาว", hex: "#FFFFFF", val: 9, mult: 1000000000, tol: null },
+            { name: "ทอง", hex: "#D4AF37", val: null, mult: 0.1, tol: 5 },
+            { name: "เงิน", hex: "#C0C0C0", val: null, mult: 0.01, tol: 10 }
+        ];
+
+        // Current Selected Color Indices
+        let currentBands = { band1: 1, band2: 0, band3: 2, band4: 10 }; // Default: 1.0kΩ ±5%
+        let targetQuizData = { baseVal: 0, tol: 5 };
+        let score = 0;
+
+        function initSelectors() {
+            renderColorOptions("band1-opts", 1, 1, 9);
+            renderColorOptions("band2-opts", 2, 0, 9);
+            renderColorOptions("band3-opts", 3, 0, 11);
+            renderColorOptions("band4-opts", 4, 0, 11, true);
+        }
+
+        function renderColorOptions(containerId, bandNum, startIdx, endIdx, filterTol = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            for (let i = startIdx; i <= endIdx; i++) {
+                const c = colorData[i];
+                if (filterTol && c.tol === null) continue;
+
+                const opt = document.createElement("div");
+                opt.className = `color-option ${currentBands['band' + bandNum] === i ? 'selected' : ''}`;
+                opt.onclick = () => selectColor(bandNum, i);
+
+                let labelText = c.name;
+                if (bandNum === 1 || bandNum === 2) labelText += ` (${c.val})`;
+                else if (bandNum === 3) labelText += ` (×${formatMult(c.mult)})`;
+                else if (bandNum === 4) labelText += ` (±${c.tol}%)`;
+
+                opt.innerHTML = `
+                    <div class="color-dot" style="background-color: ${c.hex}"></div>
+                    <span>${labelText}</span>
+                `;
+                container.appendChild(opt);
+            }
+        }
+
+        function selectColor(bandNum, colorIdx) {
+            currentBands['band' + bandNum] = colorIdx;
+            
+            // Re-render to highlight active item correctly
+            renderColorOptions(`band${bandNum}-opts`, bandNum, 
+                bandNum === 1 ? 1 : 0, 
+                bandNum === 4 ? 11 : (bandNum === 3 ? 11 : 9), 
+                bandNum === 4
+            );
+
+            // Update Resistor Graphic
+            document.getElementById(`band${bandNum}-graphic`).style.backgroundColor = colorData[colorIdx].hex;
+
+            calculateResistor();
+        }
+
+        function formatMult(mult) {
+            if (mult >= 1e6) return (mult / 1e6) + "M";
+            if (mult >= 1e3) return (mult / 1e3) + "k";
+            return mult;
+        }
+
+        function formatOhm(val) {
+            if (val >= 1e6) return (val / 1e6).toFixed(2).replace(/\.00$/, '') + " MΩ";
+            if (val >= 1e3) return (val / 1e3).toFixed(2).replace(/\.00$/, '') + " kΩ";
+            return val.toFixed(2).replace(/\.00$/, '') + " Ω";
+        }
+
+        function calculateResistor() {
+            const b1 = colorData[currentBands.band1].val;
+            const b2 = colorData[currentBands.band2].val;
+            const mult = colorData[currentBands.band3].mult;
+            const tol = colorData[currentBands.band4].tol;
+
+            const baseVal = (b1 * 10 + b2) * mult;
+            const minVal = baseVal * (1 - tol / 100);
+            const maxVal = baseVal * (1 + tol / 100);
+
+            document.getElementById("res-val").innerText = `${formatOhm(baseVal)} ±${tol}%`;
+            document.getElementById("res-range").innerText = `ช่วงค่าจริง: ${formatOhm(minVal)} - ${formatOhm(maxVal)}`;
+
+            return { baseVal, tol };
+        }
+
+        function switchMode(mode) {
+            const btns = document.querySelectorAll('.btn-mode');
+            btns.forEach(b => b.classList.remove('active'));
+
+            if (mode === 'calc') {
+                btns[0].classList.add('active');
+                document.getElementById('calc-view').style.display = 'block';
+                document.getElementById('quiz-view').style.display = 'none';
+                
+                // คืนค่าการแสดงผลตัวต้านทานแบบที่ผู้ใช้เลือกไว้ล่าสุด
+                selectColor(1, currentBands.band1);
+                selectColor(2, currentBands.band2);
+                selectColor(3, currentBands.band3);
+                selectColor(4, currentBands.band4);
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('calc-view').style.display = 'none';
+                document.getElementById('quiz-view').style.display = 'block';
+                generateQuiz();
+            }
+        }
+
+        function generateQuiz() {
+            document.getElementById('quiz-feedback').innerText = '';
+            document.getElementById('quiz-val-input').value = '';
+
+            // สุ่มแถบสีของตัวต้านทาน
+            const b1 = Math.floor(Math.random() * 9) + 1; // 1-9
+            const b2 = Math.floor(Math.random() * 10);     // 0-9
+            
+            // สุ่มตัวคูณ (แถบ 3)
+            const b3List = [0, 1, 2, 3, 4, 10, 11]; // รวม ทอง(10) และ เงิน(11)
+            const b3 = b3List[Math.floor(Math.random() * b3List.length)];
+
+            // สุ่มค่าความคลาดเคลื่อน (แถบ 4)
+            const b4List = [1, 2, 5, 10]; // น้ำตาล(1%), แดง(2%), ทอง(5%), เงิน(10%)
+            const b4 = b4List[Math.floor(Math.random() * b4List.length)];
+
+            // อัปเดตกราฟิกบนตัวต้านทาน
+            document.getElementById('band1-graphic').style.backgroundColor = colorData[b1].hex;
+            document.getElementById('band2-graphic').style.backgroundColor = colorData[b2].hex;
+            document.getElementById('band3-graphic').style.backgroundColor = colorData[b3].hex;
+            document.getElementById('band4-graphic').style.backgroundColor = colorData[b4].hex;
+
+            // คำนวณค่าจริงที่ถูกต้องไว้เทียบคำตอบ
+            const baseVal = (colorData[b1].val * 10 + colorData[b2].val) * colorData[b3].mult;
+            const tol = colorData[b4].tol;
+
+            targetQuizData = { baseVal, tol };
+        }
+
+        function checkQuizAnswer() {
+            const inputVal = parseFloat(document.getElementById('quiz-val-input').value);
+            const unitMultiplier = parseFloat(document.getElementById('quiz-unit-select').value);
+            const inputTol = parseFloat(document.getElementById('quiz-tol-select').value);
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (isNaN(inputVal)) {
+                feedback.style.color = '#ffcc00';
+                feedback.innerText = '⚠️ กรุณาระบุค่าความต้านทานก่อนตรวจคำตอบ!';
+                return;
+            }
+
+            const userTotalOhm = inputVal * unitMultiplier;
+
+            // ตรวจสอบทั้งค่า Ohm (อนุญาตให้มีความคลาดเคลื่อนจาก floating point เล็กน้อย) และเปอร์เซ็นต์ความคลาดเคลื่อน
+            const isValueCorrect = Math.abs(userTotalOhm - targetQuizData.baseVal) < 0.0001;
+            const isTolCorrect = inputTol === targetQuizData.tol;
+
+            if (isValueCorrect && isTolCorrect) {
+                feedback.style.color = '#ff549d';
+                feedback.innerHTML = '<i class="fa-solid fa-circle-check"></i> ถูกต้องเก่งมาก! คำตอบคือ ' + formatOhm(targetQuizData.baseVal) + ' ±' + targetQuizData.tol + '%';
+                score += 10;
+                document.getElementById('quiz-score-val').innerText = score;
+                setTimeout(generateQuiz, 2000);
+            } else {
+                feedback.style.color = '#ff4d4d';
+                feedback.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูกต้อง ลองอ่านค่าแถบสีใหม่อีกครั้ง!';
+            }
+        }
+
+        // Initialize Page
+        initSelectors();
+        calculateResistor();
+    </script>
+</body>
+</html>

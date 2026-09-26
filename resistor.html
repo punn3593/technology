@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องคํานวณกฎของโอมห์ | Ohm's Law Calculator</title>
+    
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0a0c0e;
+            --card-bg: #12161a;
+            --card-border: #1e262c;
+            --neon-green: #00ff66;
+            --green-glow: rgba(0, 255, 102, 0.25);
+            --green-hover: #00cc52;
+            --text-primary: #ffffff;
+            --text-secondary: #8b9bb0;
+            --input-bg: #080a0c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon-green);
+            text-shadow: 0 0 12px var(--green-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .main-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+            margin-bottom: 2rem;
+        }
+
+        .instruction {
+            background-color: rgba(0, 255, 102, 0.05);
+            border-left: 4px solid var(--neon-green);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.8rem;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-box label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-box label i {
+            color: var(--neon-green);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--input-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 14px;
+            color: var(--neon-green);
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Prompt', sans-serif;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--green-glow);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Prompt', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-calc {
+            background-color: var(--neon-green);
+            color: #000;
+            box-shadow: 0 4px 16px var(--green-glow);
+        }
+
+        .btn-calc:hover {
+            background-color: var(--green-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-clear {
+            background-color: transparent;
+            border: 1.5px solid var(--card-border);
+            color: var(--text-secondary);
+        }
+
+        .btn-clear:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .result-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .result-card {
+            background-color: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .result-card.highlight {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 12px var(--green-glow);
+        }
+
+        .result-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-value span {
+            font-size: 0.9rem;
+            color: var(--neon-green);
+            font-weight: 400;
+            margin-left: 4px;
+        }
+
+        .formula-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .formula-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon-green);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .formula-item {
+            background-color: var(--input-bg);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .formula-item code {
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--neon-green);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .result-section {
+                grid-template-columns: 1fr;
+            }
+            .header-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fa-solid fa-bolt"></i> Ohm's Law Calculator
+            </div>
+            <div class="header-subtitle">สื่อเรียนรู้คำนวณค่าทางไฟฟ้าออนไลน์ (E, I, R, Watt)</div>
+        </header>
+
+        <main class="main-card">
+            <div class="instruction">
+                <i class="fa-solid fa-circle-info"></i> <strong>คำแนะนำ:</strong> กรอกค่าที่คุณทราบอย่างน้อย <strong>2 ช่อง</strong> แล้วกดปุ่มคำนวณ ระบบจะหาค่าส่วนที่เหลือให้อัตโนมัติ
+            </div>
+
+            <div class="grid-inputs">
+                <!-- Voltage (E / V) -->
+                <div class="input-box">
+                    <label for="voltage"><i class="fa-solid fa-car-battery"></i> แรงดันไฟฟ้า (E / V)</label>
+                    <input type="number" id="voltage" class="input-field" placeholder="โวลต์ (V)" step="any">
+                </div>
+
+                <!-- Current (I) -->
+                <div class="input-box">
+                    <label for="current"><i class="fa-solid fa-wave-square"></i> กระแสไฟฟ้า (I)</label>
+                    <input type="number" id="current" class="input-field" placeholder="แอมแปร์ (A)" step="any">
+                </div>
+
+                <!-- Resistance (R) -->
+                <div class="input-box">
+                    <label for="resistance"><i class="fa-solid fa-microchip"></i> ความต้านทาน (R)</label>
+                    <input type="number" id="resistance" class="input-field" placeholder="โอห์ม (Ω)" step="any">
+                </div>
+
+                <!-- Power (Watt / P) -->
+                <div class="input-box">
+                    <label for="power"><i class="fa-solid fa-plug-circle-bolt"></i> กำลังไฟฟ้า (Watt / P)</label>
+                    <input type="number" id="power" class="input-field" placeholder="วัตต์ (W)" step="any">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-calc" onclick="calculateOhm()">
+                    <i class="fa-solid fa-calculator"></i> คำนวณค่า
+                </button>
+                <button class="btn btn-clear" onclick="resetForm()">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างข้อมูล
+                </button>
+            </div>
+
+            <!-- Display Results -->
+            <div class="result-section">
+                <div class="result-card" id="card-E">
+                    <div class="result-title">แรงดันไฟฟ้า (E)</div>
+                    <div class="result-value" id="res-E">- <span>V</span></div>
+                </div>
+                <div class="result-card" id="card-I">
+                    <div class="result-title">กระแสไฟฟ้า (I)</div>
+                    <div class="result-value" id="res-I">- <span>A</span></div>
+                </div>
+                <div class="result-card" id="card-R">
+                    <div class="result-title">ความต้านทาน (R)</div>
+                    <div class="result-value" id="res-R">- <span>Ω</span></div>
+                </div>
+                <div class="result-card" id="card-P">
+                    <div class="result-title">กำลังไฟฟ้า (P)</div>
+                    <div class="result-value" id="res-P">- <span>W</span></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Knowledge Base -->
+        <section class="formula-box">
+            <div class="formula-title">
+                <i class="fa-solid fa-book-bookmark"></i> สรุปสูตรพื้นฐานสำหรับนักเรียน
+            </div>
+            <div class="formula-grid">
+                <div class="formula-item">แรงดัน: <code>E = I × R</code></div>
+                <div class="formula-item">กระแส: <code>I = E / R</code></div>
+                <div class="formula-item">ความต้านทาน: <code>R = E / I</code></div>
+                <div class="formula-item">กำลังไฟฟ้า: <code>P = E × I</code></div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; สื่อการเรียนรู้อิเล็กทรอนิกส์ | <a href="index.html">กลับหน้าหลัก</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function calculateOhm() {
+            let e = parseFloat(document.getElementById('voltage').value);
+            let i = parseFloat(document.getElementById('current').value);
+            let r = parseFloat(document.getElementById('resistance').value);
+            let p = parseFloat(document.getElementById('power').value);
+
+            // Count filled values
+            let inputs = [e, i, r, p].filter(val => !isNaN(val) && val > 0);
+
+            if (inputs.length < 2) {
+                alert('โปรดกรอกข้อมูลอย่างน้อย 2 ช่อง เพื่อคำนวณค่าที่เหลือครับ');
+                return;
+            }
+
+            // Calculation Logic
+            if (!isNaN(e) && !isNaN(i)) {
+                r = e / i;
+                p = e * i;
+            } else if (!isNaN(e) && !isNaN(r)) {
+                i = e / r;
+                p = (e * e) / r;
+            } else if (!isNaN(e) && !isNaN(p)) {
+                i = p / e;
+                r = (e * e) / p;
+            } else if (!isNaN(i) && !isNaN(r)) {
+                e = i * r;
+                p = (i * i) * r;
+            } else if (!isNaN(i) && !isNaN(p)) {
+                e = p / i;
+                r = p / (i * i);
+            } else if (!isNaN(r) && !isNaN(p)) {
+                e = Math.sqrt(p * r);
+                i = Math.sqrt(p / r);
+            }
+
+            // Update UI
+            updateDisplay('E', e, 'V');
+            updateDisplay('I', i, 'A');
+            updateDisplay('R', r, 'Ω');
+            updateDisplay('P', p, 'W');
+        }
+
+        function updateDisplay(type, value, unit) {
+            const card = document.getElementById(`card-${type}`);
+            const resVal = document.getElementById(`res-${type}`);
+            
+            if (!isNaN(value) && isFinite(value)) {
+                // Round up to 4 decimal places if necessary
+                let formattedValue = Math.round(value * 10000) / 10000;
+                resVal.innerHTML = `${formattedValue} <span>${unit}</span>`;
+                card.classList.add('highlight');
+            } else {
+                resVal.innerHTML = `- <span>${unit}</span>`;
+                card.classList.remove('highlight');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('voltage').value = '';
+            document.getElementById('current').value = '';
+            document.getElementById('resistance').value = '';
+            document.getElementById('power').value = '';
+
+            ['E', 'I', 'R', 'P'].forEach(type => {
+                const card = document.getElementById(`card-${type}`);
+                const resVal = document.getElementById(`res-${type}`);
+                const units = { 'E': 'V', 'I': 'A', 'R': 'Ω', 'P': 'W' };
+                resVal.innerHTML = `- <span>${units[type]}</span>`;
+                card.classList.remove('highlight');
+            });
+        }
+    </script>
+</body>
+</html>
